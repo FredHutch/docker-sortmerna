@@ -2,7 +2,9 @@
 
 [![Docker Repository on Quay](https://quay.io/repository/fhcrc-microbiome/sortmerna/status "Docker Repository on Quay")](https://quay.io/repository/fhcrc-microbiome/sortmerna)
 
-```run_sortmerna.py -h
+
+```
+run_sortmerna.py -h
 
 usage: run_sortmerna.py [-h] --input INPUT --output-reads OUTPUT_READS
                         --output-logs OUTPUT_LOGS [--db DB]
