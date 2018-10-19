@@ -119,7 +119,7 @@ if __name__ == "__main__":
     parser.add_argument("--db",
                         type=str,
                         default="/usr/sortmerna/sortmerna-2.1b/rRNA_databases/all_rRNA-db",
-                        help="""Path for database.""")
+                        help="""Path for database (tar.gz).""")
     parser.add_argument("--threads",
                         type=int,
                         default=1,
@@ -130,6 +130,9 @@ if __name__ == "__main__":
                         help="Folder used for temporary files.")
 
     args = parser.parse_args()
+
+    # Make sure that the database is a gzipped tar archive
+    assert args.db.endswith(".tar.gz"), "Database must be end with .tar.gz"
 
     # Check that the temporary folder exists
     assert os.path.exists(args.temp_folder)
@@ -169,6 +172,21 @@ if __name__ == "__main__":
     # Get the database
     try:
         db_fp = get_file_from_url(args.db, temp_folder)
+    except:
+        exit_and_clean_up(temp_folder)
+
+    # Decompress the database
+    try:
+        run_cmds([
+            "tar", "xzvf", tar_fp
+        ])
+    except:
+        exit_and_clean_up(temp_folder)
+    tar_fp = tar_fp.replace(".tar.gz", "")
+
+    # Make sure that the files inside the database have the same prefix as the archive
+    try:
+        assert os.path.exists(tar_fp + ".stats"), "Database not named correctly"
     except:
         exit_and_clean_up(temp_folder)
 
