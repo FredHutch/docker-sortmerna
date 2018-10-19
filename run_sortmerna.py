@@ -178,15 +178,15 @@ if __name__ == "__main__":
     # Decompress the database
     try:
         run_cmds([
-            "tar", "xzvf", tar_fp
+            "tar", "xzvf", db_fp
         ])
     except:
         exit_and_clean_up(temp_folder)
-    tar_fp = tar_fp.replace(".tar.gz", "")
+    db_fp = db_fp.replace(".tar.gz", "")
 
     # Make sure that the files inside the database have the same prefix as the archive
     try:
-        assert os.path.exists(tar_fp + ".stats"), "Database not named correctly"
+        assert os.path.exists(db_fp + ".stats"), "Database not named correctly"
     except:
         exit_and_clean_up(temp_folder)
 
