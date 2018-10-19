@@ -169,6 +169,14 @@ if __name__ == "__main__":
     except:
         exit_and_clean_up(temp_folder)
 
+    # Decompress the reads
+    if reads_fp.endswith(".gz"):
+        try:
+            run_cmds(["gunzip", reads_fp])
+        except:
+            exit_and_clean_up(temp_folder)
+        reads_fp = reads_fp.replace(".gz", "")
+
     # Get the database
     try:
         db_fp = get_file_from_url(args.db, temp_folder)
