@@ -42,11 +42,11 @@ def run_cmds(commands, retry=0, catchExcept=False):
     exitcode = p.wait()
     if stdout:
         logging.info("Standard output of subprocess:")
-        for line in stdout.split('\n'):
+        for line in stdout.decode("utf-8").split('\n'):
             logging.info(line)
     if stderr:
         logging.info("Standard error of subprocess:")
-        for line in stderr.split('\n'):
+        for line in stderr.decode("utf-8").split('\n'):
             logging.info(line)
 
     # Check the exit code
@@ -178,17 +178,19 @@ if __name__ == "__main__":
     # Decompress the database
     try:
         run_cmds([
-            "tar", "xzvf", db_fp
+            "tar", "xzvf", db_fp, "-C", temp_folder
         ])
     except:
         exit_and_clean_up(temp_folder)
     db_fp = db_fp.replace(".tar.gz", "")
 
     # Make sure that the files inside the database have the same prefix as the archive
-    try:
-        assert os.path.exists(db_fp + ".stats"), "Database not named correctly"
-    except:
-        exit_and_clean_up(temp_folder)
+    for suffix in [".fasta", ".stats"]:
+        msg = "Database not named correctly (needs to have {})".format(db_fp + suffix)
+        try:
+            assert os.path.exists(db_fp + suffix), msg
+        except:
+            exit_and_clean_up(temp_folder)
 
     # Run SortMeRNA
 
@@ -198,14 +200,13 @@ if __name__ == "__main__":
     try:
         run_cmds([
             "sortmerna",
-            "--ref", db_fp,
+            "--ref", "{}.fasta,{}".format(db_fp, db_fp),
             "--reads", reads_fp,
             "--aligned", aligned_fp,
             "--other", unaligned_fp,
             "--fastx",
             "--log",
-            "-a", str(args.threads),
-            "-m", "4096"
+            "-a", str(args.threads)
         ])
     except:
         exit_and_clean_up(temp_folder)
@@ -217,12 +218,13 @@ if __name__ == "__main__":
     except:
         exit_and_clean_up(temp_folder)
     # Compress the output
-    try:
-        run_cmds(["gzip", unaligned_fp])
-    except:
-        exit_and_clean_up(temp_folder)
+    if args.output_reads.endswith(".gz"):
+        try:
+            run_cmds(["gzip", unaligned_fp])
+        except:
+            exit_and_clean_up(temp_folder)
 
-    unaligned_fp = unaligned_fp + ".gz"
+        unaligned_fp = unaligned_fp + ".gz"
 
     # Return the results, both the unaligned reads and the logs
     logging.info("Returning the unaligned reads and the logs")
@@ -232,7 +234,7 @@ if __name__ == "__main__":
     ]:
         # Make sure the local file exists
         try:
-            assert os.path.exists(local_fp)
+            assert os.path.exists(local_path)
         except:
             exit_and_clean_up(temp_folder)
 
