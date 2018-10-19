@@ -210,10 +210,24 @@ if __name__ == "__main__":
     except:
         exit_and_clean_up(temp_folder)
 
+    # Add the ".fastq" suffix
+    unaligned_fp = unaligned_fp + ".fastq"
+    try:
+        assert os.path.exists(unaligned_fp), "File doesn't exist: " + unaligned_fp
+    except:
+        exit_and_clean_up(temp_folder)
+    # Compress the output
+    try:
+        run_cmds(["gzip", unaligned_fp])
+    except:
+        exit_and_clean_up(temp_folder)
+
+    unaligned_fp = unaligned_fp + ".gz"
+
     # Return the results, both the unaligned reads and the logs
     logging.info("Returning the unaligned reads and the logs")
     for local_path, remote_path in [
-        (unaligned_fp + ".fastq", args.output_reads),
+        (unaligned_fp, args.output_reads),
         (log_fp, args.output_logs)
     ]:
         # Make sure the local file exists
