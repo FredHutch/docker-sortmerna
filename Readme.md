@@ -1,6 +1,6 @@
 # Docker image for SortMeRNA
 
-
+[![Docker Repository on Quay](https://quay.io/repository/fhcrc-microbiome/sortmerna/status "Docker Repository on Quay")](https://quay.io/repository/fhcrc-microbiome/sortmerna)
 
 ```run_sortmerna.py -h
 
