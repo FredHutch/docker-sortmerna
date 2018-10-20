@@ -214,7 +214,8 @@ if __name__ == "__main__":
             "--other", unaligned_fp,
             "--fastx",
             "--log",
-            "-a", str(args.threads)
+            "-a", str(args.threads),
+            "-v"
         ])
     except:
         exit_and_clean_up(temp_folder)
